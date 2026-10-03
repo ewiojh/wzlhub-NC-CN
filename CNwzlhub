@@ -1,0 +1,576 @@
+-- =======================================================
+--  WZLHUB Neon Cyber Edition - 液态磨砂胶囊悬浮 UI
+-- =======================================================
+
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- 清理旧 UI
+if PlayerGui:FindFirstChild("WZL_MainSystemUI") then
+    PlayerGui.WZL_MainSystemUI:Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "WZL_MainSystemUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.Parent = PlayerGui
+
+-- =======================================================
+--  📐 1. 右上角梯形 Notify 系统
+-- =======================================================
+
+local NotifyContainer = Instance.new("Frame")
+NotifyContainer.Name = "NotifyContainer"
+NotifyContainer.Size = UDim2.new(0, 220, 1, -20)
+NotifyContainer.Position = UDim2.new(1, -225, 0, 15)
+NotifyContainer.BackgroundTransparency = 1
+NotifyContainer.ZIndex = 200
+NotifyContainer.Parent = ScreenGui
+
+local NotifyLayout = Instance.new("UIListLayout")
+NotifyLayout.SortOrder = Enum.SortOrder.LayoutOrder
+NotifyLayout.Padding = UDim.new(0, 6)
+NotifyLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+NotifyLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+NotifyLayout.Parent = NotifyContainer
+
+local function ShowTrapezoidNotify(titleText, subText, accentColor)
+    accentColor = accentColor or Color3.fromRGB(170, 140, 255)
+
+    local Card = Instance.new("Frame")
+    Card.Name = "NotifyCard"
+    Card.Size = UDim2.new(0, 210, 0, 42)
+    Card.Position = UDim2.new(0, 230, 0, 0)
+    Card.BackgroundColor3 = Color3.fromRGB(12, 13, 20)
+    Card.BackgroundTransparency = 0.15
+    Card.BorderSizePixel = 0
+    Card.ClipsDescendants = true
+    Card.ZIndex = 201
+    Card.Parent = NotifyContainer
+
+    local LeftSlope = Instance.new("Frame")
+    LeftSlope.Size = UDim2.new(0, 3, 0, 60)
+    LeftSlope.Position = UDim2.new(0, 8, 0, -10)
+    LeftSlope.Rotation = -45
+    LeftSlope.BackgroundColor3 = accentColor
+    LeftSlope.BorderSizePixel = 0
+    LeftSlope.ZIndex = 203
+    LeftSlope.Parent = Card
+
+    local TopLine = Instance.new("Frame")
+    TopLine.Size = UDim2.new(1, 0, 0, 1)
+    TopLine.BackgroundColor3 = accentColor
+    TopLine.BackgroundTransparency = 0.6
+    TopLine.BorderSizePixel = 0
+    TopLine.ZIndex = 203
+    TopLine.Parent = Card
+
+    local ProgressBarBG = Instance.new("Frame")
+    ProgressBarBG.Size = UDim2.new(1, 0, 0, 2)
+    ProgressBarBG.Position = UDim2.new(0, 0, 1, -2)
+    ProgressBarBG.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    ProgressBarBG.BorderSizePixel = 0
+    ProgressBarBG.ZIndex = 203
+    ProgressBarBG.Parent = Card
+
+    local ProgressBar = Instance.new("Frame")
+    ProgressBar.Size = UDim2.new(1, 0, 1, 0)
+    ProgressBar.BackgroundColor3 = accentColor
+    ProgressBar.BorderSizePixel = 0
+    ProgressBar.ZIndex = 204
+    ProgressBar.Parent = ProgressBarBG
+
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Text = string.upper(titleText)
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.TextSize = 9
+    TitleLabel.TextColor3 = accentColor
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.Position = UDim2.new(0, 20, 0, 6)
+    TitleLabel.Size = UDim2.new(1, -25, 0, 12)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.ZIndex = 203
+    TitleLabel.Parent = Card
+
+    local SubLabel = Instance.new("TextLabel")
+    SubLabel.Text = subText
+    SubLabel.Font = Enum.Font.GothamMedium
+    SubLabel.TextSize = 11
+    SubLabel.TextColor3 = Color3.fromRGB(240, 240, 250)
+    SubLabel.TextXAlignment = Enum.TextXAlignment.Left
+    SubLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    SubLabel.Position = UDim2.new(0, 20, 0, 20)
+    SubLabel.Size = UDim2.new(1, -25, 0, 14)
+    SubLabel.BackgroundTransparency = 1
+    SubLabel.ZIndex = 203
+    SubLabel.Parent = Card
+
+    local SweepLight = Instance.new("Frame")
+    SweepLight.Size = UDim2.new(0, 30, 1, 0)
+    SweepLight.Position = UDim2.new(-0.3, 0, 0, 0)
+    SweepLight.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SweepLight.BackgroundTransparency = 0.85
+    SweepLight.BorderSizePixel = 0
+    SweepLight.Rotation = 15
+    SweepLight.ZIndex = 205
+    SweepLight.Parent = Card
+
+    task.spawn(function()
+        TweenService:Create(Card, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0, 0, 0, 0)
+        }):Play()
+
+        TweenService:Create(SweepLight, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Position = UDim2.new(1.3, 0, 0, 0)
+        }):Play()
+
+        TweenService:Create(ProgressBar, TweenInfo.new(3.0, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 0, 1, 0)
+        }):Play()
+
+        task.wait(3.0)
+
+        local FadeOut = TweenService:Create(Card, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+            Position = UDim2.new(0, 230, 0, 0),
+            BackgroundTransparency = 1
+        })
+        FadeOut:Play()
+        FadeOut.Completed:Wait()
+        Card:Destroy()
+    end)
+end
+
+-- =======================================================
+--  📱 2. 主菜单 UI 结构
+-- =======================================================
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 420, 0, 250)
+MainFrame.Position = UDim2.new(0.5, -210, 0.5, -125)
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 11, 18)
+MainFrame.BackgroundTransparency = 0.15
+MainFrame.BorderSizePixel = 0
+MainFrame.ClipsDescendants = false
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(170, 150, 255)
+MainStroke.Transparency = 0.6
+MainStroke.Thickness = 1.2
+MainStroke.Parent = MainFrame
+
+local GlowBackdrop = Instance.new("ImageLabel")
+GlowBackdrop.Name = "GlowBackdrop"
+GlowBackdrop.Size = UDim2.new(1.25, 0, 1.25, 0)
+GlowBackdrop.Position = UDim2.new(-0.125, 0, -0.125, 0)
+GlowBackdrop.BackgroundTransparency = 1
+GlowBackdrop.Image = "rbxassetid://5028857472"
+GlowBackdrop.ImageColor3 = Color3.fromRGB(120, 90, 255)
+GlowBackdrop.ImageTransparency = 0.6
+GlowBackdrop.ScaleType = Enum.ScaleType.Slice
+GlowBackdrop.SliceCenter = Rect.new(24, 24, 276, 276)
+GlowBackdrop.ZIndex = 0
+GlowBackdrop.Parent = MainFrame
+
+-- 顶栏 Header
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 38)
+Header.BackgroundTransparency = 1
+Header.ZIndex = 5
+Header.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Text = "WZL <font color='#A899FF'>HUB</font>"
+Title.RichText = true
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 13
+Title.TextColor3 = Color3.fromRGB(240, 240, 250)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Position = UDim2.new(0, 16, 0, 0)
+Title.Size = UDim2.new(0, 150, 1, 0)
+Title.BackgroundTransparency = 1
+Title.ZIndex = 6
+Title.Parent = Header
+
+-- ⚡ 顶栏关闭按钮 (×)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Name = "CloseBtn"
+CloseBtn.Text = "×"
+CloseBtn.Font = Enum.Font.GothamMedium
+CloseBtn.TextSize = 18
+CloseBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+CloseBtn.Size = UDim2.new(0, 24, 0, 24)
+CloseBtn.Position = UDim2.new(1, -32, 0.5, -12)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(22, 23, 34)
+CloseBtn.AutoButtonColor = false
+CloseBtn.ZIndex = 6
+CloseBtn.Parent = Header
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 6)
+CloseCorner.Parent = CloseBtn
+
+-- ⚡ 顶栏减号按钮 (-) 位于 × 左边
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Name = "MinimizeBtn"
+MinimizeBtn.Text = "-"
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.TextSize = 18
+MinimizeBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+MinimizeBtn.Size = UDim2.new(0, 24, 0, 24)
+MinimizeBtn.Position = UDim2.new(1, -62, 0.5, -12)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(22, 23, 34)
+MinimizeBtn.AutoButtonColor = false
+MinimizeBtn.ZIndex = 6
+MinimizeBtn.Parent = Header
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 6)
+MinCorner.Parent = MinimizeBtn
+
+-- 侧边栏与页面
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 105, 1, -48)
+Sidebar.Position = UDim2.new(0, 12, 0, 44)
+Sidebar.BackgroundTransparency = 1
+Sidebar.ZIndex = 5
+Sidebar.Parent = MainFrame
+
+local TabLayout = Instance.new("UIListLayout")
+TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabLayout.Padding = UDim.new(0, 6)
+TabLayout.Parent = Sidebar
+
+local PagesFolder = Instance.new("Frame")
+PagesFolder.Size = UDim2.new(1, -135, 1, -52)
+PagesFolder.Position = UDim2.new(0, 125, 0, 46)
+PagesFolder.BackgroundTransparency = 1
+PagesFolder.ZIndex = 5
+PagesFolder.Parent = MainFrame
+
+local Tabs = {}
+local FirstTab = true
+
+local function CreateTab(tabName)
+    local Page = Instance.new("ScrollingFrame")
+    Page.Name = tabName .. "_Page"
+    Page.Size = UDim2.new(1, 0, 1, 0)
+    Page.BackgroundTransparency = 1
+    Page.BorderSizePixel = 0
+    Page.ScrollBarThickness = 2
+    Page.ScrollBarImageColor3 = Color3.fromRGB(150, 130, 210)
+    Page.Visible = FirstTab
+    Page.ZIndex = 5
+    Page.Parent = PagesFolder
+
+    local PageLayout = Instance.new("UIListLayout")
+    PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    PageLayout.Padding = UDim.new(0, 8)
+    PageLayout.Parent = Page
+
+    local TabBtn = Instance.new("TextButton")
+    TabBtn.Size = UDim2.new(1, 0, 0, 32)
+    TabBtn.BackgroundColor3 = FirstTab and Color3.fromRGB(38, 35, 58) or Color3.fromRGB(16, 17, 25)
+    TabBtn.BackgroundTransparency = FirstTab and 0.2 or 0.6
+    TabBtn.Text = "  " .. tabName
+    TabBtn.TextColor3 = FirstTab and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(130, 130, 160)
+    TabBtn.Font = Enum.Font.GothamMedium
+    TabBtn.TextSize = 11
+    TabBtn.TextXAlignment = Enum.TextXAlignment.Left
+    TabBtn.AutoButtonColor = false
+    TabBtn.ZIndex = 5
+    TabBtn.Parent = Sidebar
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = TabBtn
+
+    local tabData = { Button = TabBtn, Page = Page }
+    table.insert(Tabs, tabData)
+
+    TabBtn.MouseButton1Click:Connect(function()
+        for _, t in ipairs(Tabs) do
+            local isCurrent = (t == tabData)
+            t.Page.Visible = isCurrent
+            TweenService:Create(t.Button, TweenInfo.new(0.2), {
+                BackgroundColor3 = isCurrent and Color3.fromRGB(38, 35, 58) or Color3.fromRGB(16, 17, 25),
+                BackgroundTransparency = isCurrent and 0.2 or 0.6,
+                TextColor3 = isCurrent and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(130, 130, 160)
+            }):Play()
+        end
+    end)
+
+    FirstTab = false
+    return Page
+end
+
+local function AddToggle(parentPage, text, defaultState, callback)
+    local Card = Instance.new("Frame")
+    Card.Size = UDim2.new(1, -6, 0, 38)
+    Card.BackgroundColor3 = Color3.fromRGB(20, 22, 34)
+    Card.BackgroundTransparency = 0.35
+    Card.ZIndex = 5
+    Card.Parent = parentPage
+
+    local CardCorner = Instance.new("UICorner")
+    CardCorner.CornerRadius = UDim.new(0, 10)
+    CardCorner.Parent = Card
+
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Text = text
+    TitleLabel.Font = Enum.Font.GothamMedium
+    TitleLabel.TextSize = 11
+    TitleLabel.TextColor3 = Color3.fromRGB(235, 235, 245)
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.Position = UDim2.new(0, 12, 0, 0)
+    TitleLabel.Size = UDim2.new(0.65, 0, 1, 0)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.ZIndex = 6
+    TitleLabel.Parent = Card
+
+    local SwitchBG = Instance.new("TextButton")
+    SwitchBG.Text = ""
+    SwitchBG.Size = UDim2.new(0, 36, 0, 18)
+    SwitchBG.Position = UDim2.new(1, -46, 0.5, -9)
+    SwitchBG.BackgroundColor3 = defaultState and Color3.fromRGB(130, 100, 255) or Color3.fromRGB(35, 36, 50)
+    SwitchBG.AutoButtonColor = false
+    SwitchBG.ZIndex = 6
+    SwitchBG.Parent = Card
+
+    local SwitchCorner = Instance.new("UICorner")
+    SwitchCorner.CornerRadius = UDim.new(1, 0)
+    SwitchCorner.Parent = SwitchBG
+
+    local Circle = Instance.new("Frame")
+    Circle.Size = UDim2.new(0, 14, 0, 14)
+    Circle.Position = defaultState and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
+    Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Circle.ZIndex = 7
+    Circle.Parent = SwitchBG
+
+    local CircleCorner = Instance.new("UICorner")
+    CircleCorner.CornerRadius = UDim.new(1, 0)
+    CircleCorner.Parent = Circle
+
+    local toggled = defaultState
+    SwitchBG.MouseButton1Click:Connect(function()
+        toggled = not toggled
+        local targetPos = toggled and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
+        local targetColor = toggled and Color3.fromRGB(130, 100, 255) or Color3.fromRGB(35, 36, 50)
+
+        TweenService:Create(Circle, TweenInfo.new(0.22, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = targetPos}):Play()
+        TweenService:Create(SwitchBG, TweenInfo.new(0.22), {BackgroundColor3 = targetColor}):Play()
+
+        if toggled then
+            ShowTrapezoidNotify("已开启", text, Color3.fromRGB(130, 255, 170))
+        else
+            ShowTrapezoidNotify("已关闭", text, Color3.fromRGB(255, 120, 140))
+        end
+
+        if callback then callback(toggled) end
+    end)
+end
+
+local HomePage = CreateTab("主要功能")
+AddToggle(HomePage, "人物移动加速", false)
+AddToggle(HomePage, "穿墙飞行模式", false)
+AddToggle(HomePage, "无限跳跃保护", false)
+
+local VisualPage = CreateTab("视觉透视")
+AddToggle(VisualPage, "全屏 2D ESP", false)
+
+-- =======================================================
+--  💎 3. 顶级液态磨砂椭圆胶囊 (Glassmorphic Gel Capsule)
+-- =======================================================
+
+local GlassCapsule = Instance.new("TextButton")
+GlassCapsule.Name = "GlassCapsule"
+GlassCapsule.Text = ""
+GlassCapsule.Size = UDim2.new(0, 68, 0, 34) -- 精致椭圆胶囊 1.8:1
+GlassCapsule.Position = UDim2.new(0, 20, 0.4, 0)
+GlassCapsule.BackgroundColor3 = Color3.fromRGB(16, 18, 28)
+GlassCapsule.BackgroundTransparency = 0.25 -- 液态半透明
+GlassCapsule.BorderSizePixel = 0
+GlassCapsule.AutoButtonColor = false
+GlassCapsule.Visible = false
+GlassCapsule.ClipsDescendants = true
+GlassCapsule.ZIndex = 300
+GlassCapsule.Parent = ScreenGui
+
+-- 1. 全圆角实现流线椭圆
+local CapsuleCorner = Instance.new("UICorner")
+CapsuleCorner.CornerRadius = UDim.new(1, 0)
+CapsuleCorner.Parent = GlassCapsule
+
+-- 2. 双重半透明霓虹边框
+local CapsuleStroke = Instance.new("UIStroke")
+CapsuleStroke.Color = Color3.fromRGB(180, 150, 255)
+CapsuleStroke.Transparency = 0.35
+CapsuleStroke.Thickness = 1.2
+CapsuleStroke.Parent = GlassCapsule
+
+-- 3. 液态磨砂顶部高光反射 (Top-Glow Reflection)
+local GlassHighlight = Instance.new("Frame")
+GlassHighlight.Name = "Highlight"
+GlassHighlight.Size = UDim2.new(1, 0, 0.45, 0)
+GlassHighlight.Position = UDim2.new(0, 0, 0, 0)
+GlassHighlight.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+GlassHighlight.BackgroundTransparency = 0.88 -- 柔和上层磨砂高光
+GlassHighlight.BorderSizePixel = 0
+GlassHighlight.ZIndex = 301
+GlassHighlight.Parent = GlassCapsule
+
+local HighlightCorner = Instance.new("UICorner")
+HighlightCorner.CornerRadius = UDim.new(1, 0)
+HighlightCorner.Parent = GlassHighlight
+
+-- 4. 胶囊内部图标 + 科技字样
+local CapsuleIcon = Instance.new("TextLabel")
+CapsuleIcon.Text = "⚡"
+CapsuleIcon.Font = Enum.Font.GothamBold
+CapsuleIcon.TextSize = 14
+CapsuleIcon.TextColor3 = Color3.fromRGB(190, 160, 255)
+CapsuleIcon.Position = UDim2.new(0, 8, 0, 0)
+CapsuleIcon.Size = UDim2.new(0, 18, 1, 0)
+CapsuleIcon.BackgroundTransparency = 1
+CapsuleIcon.ZIndex = 302
+CapsuleIcon.Parent = GlassCapsule
+
+local CapsuleText = Instance.new("TextLabel")
+CapsuleText.Text = "WZL"
+CapsuleText.Font = Enum.Font.GothamBold
+CapsuleText.TextSize = 10
+CapsuleText.TextColor3 = Color3.fromRGB(240, 240, 250)
+CapsuleText.TextXAlignment = Enum.TextXAlignment.Left
+CapsuleText.Position = UDim2.new(0, 28, 0, 0)
+CapsuleText.Size = UDim2.new(1, -30, 1, 0)
+CapsuleText.BackgroundTransparency = 1
+CapsuleText.ZIndex = 302
+CapsuleText.Parent = GlassCapsule
+
+-- =======================================================
+--  ⚡ 4. 交互逻辑（隔离拖拽与点击 + 最小化与还原）
+-- =======================================================
+
+-- 点击 × 彻底关闭 UI
+CloseBtn.MouseButton1Click:Connect(function()
+    TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    }):Play()
+    task.wait(0.25)
+    ScreenGui:Destroy()
+end)
+
+-- 点击 - 最小化为液态椭圆胶囊
+MinimizeBtn.MouseButton1Click:Connect(function()
+    TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    }):Play()
+    task.wait(0.25)
+    MainFrame.Visible = false
+
+    GlassCapsule.Visible = true
+    GlassCapsule.Size = UDim2.new(0, 0, 0, 0)
+    TweenService:Create(GlassCapsule, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 68, 0, 34)
+    }):Play()
+end)
+
+-- ⚡ 关键突破：手势精准隔离 (防误触拖动)
+local draggingCapsule = false
+local dragStartPos = Vector3.new()
+local capsuleStartUDim = UDim2.new()
+local totalDragDistance = 0
+
+GlassCapsule.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingCapsule = true
+        dragStartPos = input.Position
+        capsuleStartUDim = GlassCapsule.Position
+        totalDragDistance = 0
+
+        -- 按压微缩手感反馈
+        TweenService:Create(GlassCapsule, TweenInfo.new(0.12), {
+            Size = UDim2.new(0, 62, 0, 30)
+        }):Play()
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if draggingCapsule and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStartPos
+        totalDragDistance = delta.Magnitude -- 实时记录手势移动的绝对距离
+
+        GlassCapsule.Position = UDim2.new(
+            capsuleStartUDim.X.Scale, 
+            capsuleStartUDim.X.Offset + delta.X, 
+            capsuleStartUDim.Y.Scale, 
+            capsuleStartUDim.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if not draggingCapsule then return end
+        draggingCapsule = false
+
+        -- 还原按压尺寸
+        TweenService:Create(GlassCapsule, TweenInfo.new(0.15), {
+            Size = UDim2.new(0, 68, 0, 34)
+        }):Play()
+
+        -- ⚡ 防误触核心判定：位移小于 6 像素才认定为“纯点击打开”
+        if totalDragDistance < 6 then
+            GlassCapsule.Visible = false
+            MainFrame.Visible = true
+
+            TweenService:Create(MainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, 420, 0, 250),
+                Position = UDim2.new(0.5, -210, 0.5, -125)
+            }):Play()
+        end
+    end
+end)
+
+-- 主界面拖拽逻辑
+local function EnableMainDrag(guiObject)
+    local dragging, dragStart, startPos
+    guiObject.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = guiObject.Position
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            guiObject.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+end
+
+EnableMainDrag(MainFrame)
+
+-- 弹出测试提醒
+ShowTrapezoidNotify("WELCOME", LocalPlayer.DisplayName, Color3.fromRGB(170, 140, 255))
